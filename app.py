@@ -7,7 +7,7 @@ st.set_page_config(page_title="Havil Academic Database")
 st.header("Y10 Result")
 st.subheader("Let's analyse")
 
-file_name = "y10.csv"
+file_name = "y10-2.csv"
 df = pd.read_csv(file_name)
 
 # Getting a list of unique names from the Name column
