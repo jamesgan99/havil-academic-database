@@ -28,10 +28,9 @@ def analyseSubject():
     filtered_data = df.dropna(subset=[column_name])
 
     # Analyze grades and pass/fail statistics for the selected subject
-    analyze_grades(filtered_data[column_name])
+    analyze_grades(filtered_data[column_name], column_name)
 
-# Function to analyze grades and pass/fail statistics
-def analyze_grades(scores):
+def analyze_grades(scores,column_name):
     # Define grade boundaries and categories
     grade_categories = {
         'A': lambda score: score >= 80,
@@ -105,14 +104,28 @@ def analyze_grades(scores):
     # Calculate class average
     class_average = scores.mean()
 
-    # Find highest score and corresponding student name
-    highest_score = scores.max()
-    highest_score_name = df.loc[scores.idxmax(), 'Name']
+    # Find the highest, second highest, and third highest scores
+    sorted_scores = scores.sort_values(ascending=False).unique()
+    highest_score = sorted_scores[0]
+    second_highest_score = sorted_scores[1] if len(sorted_scores) > 1 else None
+    third_highest_score = sorted_scores[2] if len(sorted_scores) > 2 else None
 
-    # Display statistics
+    # Find corresponding student names for these scores
+    highest_score_names = df.loc[df[column_name] == highest_score, 'Name'].values
+    second_highest_score_names = df.loc[df[column_name] == second_highest_score, 'Name'].values if second_highest_score is not None else []
+    third_highest_score_names = df.loc[df[column_name] == third_highest_score, 'Name'].values if third_highest_score is not None else []
+
+    # Display statistics with improved aesthetics
     st.subheader("Statistics:")
-    st.write(f"Class Average: {class_average:.2f}")
-    st.write(f"Highest Score: {highest_score} (Student: {highest_score_name})")
+    st.markdown(f"### Class Average: :bar_chart: **{class_average:.2f}**")
+    st.markdown(f"### Highest Score: :trophy: **{highest_score}** (Students: {', '.join(highest_score_names)})")
+    
+    if second_highest_score is not None:
+        st.markdown(f"### Second Highest Score: :medal: **{second_highest_score}** (Students: {', '.join(second_highest_score_names)})")
+    
+    if third_highest_score is not None:
+        st.markdown(f"### Third Highest Score: :third_place_medal: **{third_highest_score}** (Students: {', '.join(third_highest_score_names)})")
+
 
 def analyseStudent():
     # Asking the user to select a name from the dropdown
