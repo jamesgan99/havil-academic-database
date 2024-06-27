@@ -152,7 +152,6 @@ def analyseStudent():
     # Filter the DataFrame based on the selected name
     filtered_df = df[df['Name'] == selected_name]
     subject_columns = [f"{selected_subject}-T1", f"{selected_subject}-T2", f"{selected_subject}-T3"]
-    # filtered_subject_df = filtered_df[['Name'] + subject_columns]
 
     # Check if the selected subject columns exist in the filtered DataFrame
     if all(col in filtered_df.columns for col in subject_columns):
@@ -176,6 +175,12 @@ def analyseStudent():
                 'Type': 'Average'
             })
 
+            # Calculate individual term averages for the selected student
+            term_averages = filtered_df[subject_columns].mean().values
+
+            # Calculate overall average across all terms for the selected student
+            overall_average = term_averages.mean()
+
             # Add the type of score (individual or average) to subject_data
             subject_data['Type'] = 'Individual'
 
@@ -196,6 +201,10 @@ def analyseStudent():
 
             # Display the chart
             st.altair_chart(chart, use_container_width=True)
+
+            # Display the overall average score across all terms for the selected student
+            st.subheader(f"{selected_name}'s Overall Average Score in {selected_subject}")
+            st.write(f"Overall Average: {overall_average:.2f}")
     else:
         st.write(f"No data available for {selected_subject} for {selected_name}.")
 
