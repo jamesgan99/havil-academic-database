@@ -115,16 +115,33 @@ def analyze_grades(scores,column_name):
     second_highest_score_names = df.loc[df[column_name] == second_highest_score, 'Name'].values if second_highest_score is not None else []
     third_highest_score_names = df.loc[df[column_name] == third_highest_score, 'Name'].values if third_highest_score is not None else []
 
+    # Create a one-dimensional scatter plot (strip plot) for score distribution
+    strip_plot = alt.Chart(df.dropna(subset=[column_name])).mark_circle(size=60).transform_calculate(
+        x_value='1'  # Set a constant x value
+    ).encode(
+        y=alt.Y(column_name, title='Score'),
+        x=alt.X('x_value:Q', scale=alt.Scale(domain=(0, 2)), axis=None),  # Center the data at the middle
+        tooltip=['Name', column_name]
+    ).properties(
+        title=f"Score Distribution for {column_name}"
+    ).configure_axis(
+        grid=True  # Optionally, add a grid for better visualization
+    )
+
+    # Display the strip plot
+    st.subheader("Score Distribution:")
+    st.altair_chart(strip_plot, use_container_width=True)
+
     # Display statistics with improved aesthetics
     st.subheader("Statistics:")
-    st.markdown(f"### Class Average: :bar_chart: **{class_average:.2f}**")
-    st.markdown(f"### Highest Score: :trophy: **{highest_score}** (Students: {', '.join(highest_score_names)})")
+    st.markdown(f"###### Class Average: :bar_chart: **{class_average:.2f}**")
+    st.markdown(f"###### Highest Score: :trophy: **{highest_score}** (Students: {', '.join(highest_score_names)})")
     
     if second_highest_score is not None:
-        st.markdown(f"### Second Highest Score: :medal: **{second_highest_score}** (Students: {', '.join(second_highest_score_names)})")
+        st.markdown(f"###### Second Highest Score: :medal: **{second_highest_score}** (Students: {', '.join(second_highest_score_names)})")
     
     if third_highest_score is not None:
-        st.markdown(f"### Third Highest Score: :third_place_medal: **{third_highest_score}** (Students: {', '.join(third_highest_score_names)})")
+        st.markdown(f"###### Third Highest Score: :third_place_medal: **{third_highest_score}** (Students: {', '.join(third_highest_score_names)})")
 
 
 def analyseStudent():
